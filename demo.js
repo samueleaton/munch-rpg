@@ -46,38 +46,56 @@
 
 	'use strict';
 
-	var _munch = __webpack_require__(1);
+	var _index = __webpack_require__(1);
 
-	var _munch2 = _interopRequireDefault(_munch);
+	var _index2 = _interopRequireDefault(_index);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	_munch2.default.hook(document.getElementById('root'));
+	_index2.default.hook(document.getElementById('root'));
 
-	_munch2.default.createLayer('playerLayer', 1);
+	_index2.default.createLayer('playerLayer', 1);
 
-	var player = _munch2.default.createObject({
+	var player = _index2.default.createObject({
+	  name: 'player',
 	  // scale: 1, scaleY: 1, scaleX: 1,
 	  layer: 'playerLayer',
 	  spriteSheet: './images/football_sprite_11.png'
 	});
 
-	// player.spriteSheet('./images/football_sprite_11.png');
-
 	player.defineAnimation('idle', {
-	  ticksPerFrame: 10,
+	  ticksPerFrame: 25,
 	  frames: [{ x: 288, y: 0, w: 36, h: 64, flipX: false }, { x: 324, y: 0, w: 36, h: 64, flipX: false }, { x: 360, y: 0, w: 36, h: 64, flipX: false }, { x: 324, y: 0, w: 36, h: 64, flipX: false }]
 	});
 
-	// player.divideFpsFrequency(6);
+	player.defineAnimation('walk', {
+	  ticksPerFrame: 5,
+	  frames: [{ x: 36, y: 0, w: 36, h: 64 }, { x: 72, y: 0, w: 36, h: 64 }, { x: 108, y: 0, w: 36, h: 64 }, { x: 144, y: 0, w: 36, h: 64 }, { x: 180, y: 0, w: 36, h: 64 }, { x: 216, y: 0, w: 36, h: 64 }, { x: 252, y: 0, w: 36, h: 64 }]
+	});
+
+	player.defineAnimation('sprint', {
+	  ticksPerFrame: 3,
+	  frames: [{ x: 468, y: 0, w: 36, h: 64 }, { x: 504, y: 0, w: 36, h: 64 }, { x: 540, y: 0, w: 36, h: 64 }, { x: 576, y: 0, w: 36, h: 64 }, { x: 612, y: 0, w: 36, h: 64 }, { x: 648, y: 0, w: 36, h: 64 }, { x: 684, y: 0, w: 36, h: 64 }]
+	});
 
 	window.player = player;
-	window.munch = _munch2.default;
+	window.munch = _index2.default;
 
-	player.setAnimation('idle');
 	setTimeout(function () {
-	  _munch2.default.init();
+	  _index2.default.init();
 	}, 500);
+
+	// setTimeout(function() {
+	//   player.setAnimation('walk');
+	// }, 2000);
+
+	// setTimeout(function() {
+	//   player.setAnimation('sprint');
+	// }, 4000);
+
+	_index2.default.loop(function (state) {
+	  if (state.keys.right && state.keys.shift) player.setAnimation('sprint');else if (state.keys.left && state.keys.shift) player.setAnimation('sprint', { flipX: true });else if (state.keys.left) player.setAnimation('walk', { flipX: true });else if (state.keys.right) player.setAnimation('walk');else if (state.flippedX) player.setAnimation('idle', { flipX: true });else player.setAnimation('idle');
+	});
 	// player.defineAnimation('run', [
 	//   {x: 0, y: 0, w: 10, h: 10, flipX: false },
 	//   {x: 0, y: 0, w: 10, h: 10, flipX: false },
@@ -95,30 +113,89 @@
 	  value: true
 	});
 
+	var _Munch = __webpack_require__(2);
+
+	var _Munch2 = _interopRequireDefault(_Munch);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = new _Munch2.default();
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _lodash = __webpack_require__(2);
+	var _lodash = __webpack_require__(3);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _GameObject = __webpack_require__(5);
+
+	var _GameObject2 = _interopRequireDefault(_GameObject);
+
+	var _Layer = __webpack_require__(7);
+
+	var _Layer2 = _interopRequireDefault(_Layer);
+
+	var _GameContainer = __webpack_require__(8);
+
+	var _GameContainer2 = _interopRequireDefault(_GameContainer);
+
+	var _stateStore = __webpack_require__(6);
+
+	var _stateStore2 = _interopRequireDefault(_stateStore);
+
+	var _keyMap = __webpack_require__(9);
+
+	var _keyMap2 = _interopRequireDefault(_keyMap);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	document.addEventListener('keydown', function (evt) {
+	  _stateStore2.default.modifyState(function (state) {
+	    state.keys[_keyMap2.default[evt.keyCode]] = true;
+	  });
+	});
+
+	document.addEventListener('keyup', function (evt) {
+	  _stateStore2.default.modifyState(function (state) {
+	    state.keys[_keyMap2.default[evt.keyCode]] = false;
+	  });
+	});
+
+	var props = new WeakMap();
+
 	var Munch = function () {
 	  function Munch() {
 	    _classCallCheck(this, Munch);
 
-	    this.gameContainer = null;
-	    this.layers = {};
-	    this.gameObjects = [];
-	    this.clock = 0;
+	    props.set(this, {
+	      gameContainer: null,
+	      layers: {},
+	      gameObjects: [],
+	      gameLoop: function gameLoop(state) {}
+	    });
+
+	    _stateStore2.default.setInitialState({
+	      clock: 0,
+	      keys: {}
+	    });
 	  }
 
 	  _createClass(Munch, [{
 	    key: 'hook',
 	    value: function hook(element) {
-	      this.gameContainer = new GameContainer(element);
+	      props.get(this).gameContainer = new _GameContainer2.default(element);
 	    }
 	  }, {
 	    key: 'createObject',
@@ -127,161 +204,70 @@
 	        args[_key] = arguments[_key];
 	      }
 
-	      var gameObj = new (Function.prototype.bind.apply(GameObject, [null].concat(args)))();
-	      this.gameObjects.push(gameObj);
+	      var gameObj = new (Function.prototype.bind.apply(_GameObject2.default, [null].concat(args)))();
+	      props.get(this).gameObjects.push(gameObj);
 	      return gameObj;
 	    }
 	  }, {
 	    key: 'createLayer',
 	    value: function createLayer(layerName, zIndex) {
-	      var layer = new Layer(layerName, zIndex);
-	      // update layer dimensions here
-	      //
-	      this.layers[layerName] = layer;
+	      if (!props.get(this).gameContainer) throw new Error('Must set gameContainer before a layer can be created');
+
+	      var layer = new _Layer2.default(layerName, zIndex);
+	      layer.canvas.width = props.get(this).gameContainer.width;
+	      layer.canvas.height = props.get(this).gameContainer.height;
+	      props.get(this).layers[layerName] = layer;
 	    }
 	  }, {
 	    key: 'init',
 	    value: function init() {
 	      var _this = this;
 
-	      _lodash2.default.forOwn(this.layers, function (layerObj, layerName) {
-	        _this.gameContainer.element.appendChild(layerObj.canvas);
+	      _lodash2.default.forOwn(props.get(this).layers, function (layerObj, layerName) {
+	        props.get(_this).gameContainer.element.appendChild(layerObj.canvas);
 	      });
-	      this.loop();
+	      this.__loop__();
+	    }
+	  }, {
+	    key: '__loop__',
+	    value: function __loop__() {
+	      var _this2 = this;
+
+	      props.get(this).gameLoop(_stateStore2.default.state, _stateStore2.default.previousState);
+	      _lodash2.default.forEach(props.get(this).gameObjects, function (gameObj) {
+	        gameObj.update(_stateStore2.default.state);
+	      });
+	      _lodash2.default.forOwn(props.get(this).layers, function (layerObj, layerName) {
+	        layerObj.ctx.clearRect(0, 0, layerObj.canvas.width, layerObj.canvas.height);
+	      });
+	      _lodash2.default.forEach(props.get(this).gameObjects, function (gameObj) {
+	        var layer = props.get(_this2).layers[gameObj.layer];
+	        gameObj.draw(layer.canvas, layer.ctx);
+	      });
+	      _stateStore2.default.modifyState(function (state) {
+	        return state.clock++;
+	      });
+	      requestAnimationFrame(function () {
+	        return _this2.__loop__();
+	      });
 	    }
 	  }, {
 	    key: 'loop',
-	    value: function loop() {
-	      var _this2 = this;
-
-	      _lodash2.default.forEach(this.gameObjects, function (gameObj) {
-	        gameObj.update( /*inject state instead of just clock value*/_this2.clock);
-	      });
-	      _lodash2.default.forOwn(this.layers, function (layerObj, layerName) {
-	        layerObj.ctx.clearRect(0, 0, layerObj.canvas.width, layerObj.canvas.height);
-	      });
-	      _lodash2.default.forEach(this.gameObjects, function (gameObj) {
-	        gameObj.draw(_this2.layers[gameObj.layer].ctx);
-	      });
-	      this.clock++;
-	      // requestAnimationFrame(() => this.loop());
+	    value: function loop(func) {
+	      props.get(this).gameLoop = func;
 	    }
 	  }]);
 
 	  return Munch;
 	}();
 
-	var GameContainer = function GameContainer(element) {
-	  _classCallCheck(this, GameContainer);
+	exports.default = Munch;
 
-	  this.element = element;
-	};
 
-	var GameObject = function () {
-	  function GameObject(conf) {
-	    _classCallCheck(this, GameObject);
-
-	    if (conf && !_lodash2.default.isObjectLike(conf)) throw new Error('Invalid game object config');
-
-	    if (_lodash2.default.isObjectLike(conf)) {
-	      this.spriteSheet = new Image();
-	      this.spriteSheet.src = conf.spriteSheet;
-
-	      this.layer = conf.layer;
-	    }
-
-	    this.x = this.y = this.w = this.h = 10;
-	    this.animations = {};
-	    this.currentAnimationName = null;
-	    this.currentAnimationFrame = 0;
-	    this.ticksPerFrame = 1;
-	  }
-
-	  _createClass(GameObject, [{
-	    key: 'defineAnimation',
-	    value: function defineAnimation(animationName, confObj) {
-	      this.ticksPerFrame = confObj.ticksPerFrame || 1;
-	      this.animations[animationName] = confObj.frames;
-	    }
-	  }, {
-	    key: 'setAnimation',
-	    value: function setAnimation(animationName) {
-	      this.currentAnimationName = animationName;
-	      this.currentAnimationFrame = 0;
-	    }
-
-	    // divideFpsFrequency(number) {
-	    //   this.ticksPerFrame = Math.floor(number);
-	    //   if (this.ticksPerFrame < 1)
-	    //     this.ticksPerFrame = 1;
-	    // }
-
-	  }, {
-	    key: 'update',
-	    value: function update(clockValue) {
-	      if (this.currentAnimationName) {
-	        console.log('check 1 . .');
-	        if (clockValue % this.ticksPerFrame === 0) {
-	          console.log('check . 2 .');
-	          this.currentAnimationFrame++;
-	          if (!this.animations[this.currentAnimationName][this.currentAnimationFrame]) this.currentAnimationFrame = 0;
-	        }
-	      }
-	      // console.log('updated!');
-	    }
-	  }, {
-	    key: 'draw',
-	    value: function draw(ctx) {
-	      if (this.currentAnimationName) {
-	        console.log('check . . 3');
-	        var anim = this.animations[this.currentAnimationName][this.currentAnimationFrame];
-	        ctx.drawImage(this.spriteSheet, anim.x, anim.y, anim.w, anim.h, 50, 50, anim.w, anim.h);
-	      }
-	      // console.log('drew: ', ctx);
-	      // ctx.fillStyle = 'orange';
-	      // ctx.fillRect(this.x, this.y, this.w, this.h);
-	    }
-	  }]);
-
-	  return GameObject;
-	}();
-
-	var Layer = function Layer(layerName, zIndex) {
-	  _classCallCheck(this, Layer);
-
-	  this.name = layerName;
-	  this.zIndex = zIndex;
-	  this.canvas = document.createElement("canvas");
-	  this.canvas.height = 400;
-	  this.canvas.width = 700;
-	  this.ctx = this.canvas.getContext('2d');
-	  this.canvas.style.position = "absolute";
-	  this.canvas.style.zIndex = zIndex;
-	};
-
-	// function Layer(appendTo, _WIDTH, _HEIGHT, Z_INDEX) {
-	//   thisLayer = this;
-	//   this.canvas = document.createElement("canvas");
-	//   this.canvas.height = _HEIGHT;
-	//   this.canvas.width = _WIDTH;
-	//   (function(){
-	//     thisLayer.canvas.style.position = "relative";
-	//     thisLayer.canvas.style.zIndex = Z_INDEX;
-	//     var parent = appendTo;
-	//     appendTo.appendChild(thisLayer.canvas);
-	//   })();
-	//   return this.canvas.getContext("2d");
-	// }
-
-	// const munch = {
-	//   createObject: (...args) => new GameObject(...args),
-	//   init:
-	// };
-
-	exports.default = new Munch();
+	window.store = _stateStore2.default;
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -15358,10 +15344,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)(module), (function() { return this; }())))
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -15375,6 +15361,343 @@
 		return module;
 	}
 
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _lodash = __webpack_require__(3);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _stateStore = __webpack_require__(6);
+
+	var _stateStore2 = _interopRequireDefault(_stateStore);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var props = new WeakMap();
+
+	var GameObject = function () {
+	  function GameObject(conf) {
+	    _classCallCheck(this, GameObject);
+
+	    if (conf && !_lodash2.default.isObjectLike(conf)) throw new Error('Invalid game object config');
+
+	    if (_lodash2.default.isObjectLike(conf)) {
+	      var spriteSheet = new Image();
+	      spriteSheet.src = conf.spriteSheet;
+
+	      this.layer = conf.layer;
+	      this.currentAnimation = '';
+	      props.set(this, {
+	        spriteSheet: spriteSheet,
+	        x: 0,
+	        y: 0,
+	        w: 0,
+	        h: 0,
+	        animations: {},
+	        currentAnimationName: null,
+	        currentAnimationFrame: 0,
+	        animationFlippedHorizontal: false,
+	        alreadyFlippedHorizontal: false,
+	        ticksPerFrame: 1
+	      });
+	    }
+	  }
+
+	  _createClass(GameObject, [{
+	    key: 'defineAnimation',
+	    value: function defineAnimation(animationName, confObj) {
+	      props.get(this).ticksPerFrame = confObj.ticksPerFrame || 1;
+	      props.get(this).animations[animationName] = confObj;
+	    }
+	  }, {
+	    key: 'setAnimation',
+	    value: function setAnimation(animationName, config) {
+	      if (config && config.flipX === true) {
+	        this.animationFlippedHorizontal = true;
+	        if (!_stateStore2.default.state.flippedX) _stateStore2.default.modifyState(function (state) {
+	          state.flippedX = true;
+	        });
+	      } else {
+	        this.animationFlippedHorizontal = false;
+	        if (_stateStore2.default.state.flippedX) _stateStore2.default.modifyState(function (state) {
+	          state.flippedX = false;
+	        });
+	      }
+
+	      if (this.currentAnimation === animationName) return;
+
+	      this.currentAnimation = animationName;
+	      props.get(this).currentAnimationFrame = 0;
+
+	      console.log('change animation: ', animationName);
+
+	      props.get(this).ticksPerFrame = props.get(this).animations[animationName] && props.get(this).animations[animationName].ticksPerFrame || 1;
+	    }
+	  }, {
+	    key: 'update',
+	    value: function update(gameState) {
+	      if (this.currentAnimation) {
+	        // console.log('check 1 . .');
+	        if (gameState.clock % props.get(this).ticksPerFrame === 0) {
+	          // console.log('check . 2 .');
+	          props.get(this).currentAnimationFrame++;
+	          if (!props.get(this).animations[this.currentAnimation].frames[props.get(this).currentAnimationFrame]) props.get(this).currentAnimationFrame = 0;
+	        }
+	      }
+	      // console.log('updated!');
+	    }
+	  }, {
+	    key: 'draw',
+	    value: function draw(layer, ctx) {
+	      if (this.currentAnimation) {
+	        // console.log('check . . 3');
+	        var anim = props.get(this).animations[this.currentAnimation].frames[props.get(this).currentAnimationFrame];
+
+	        if (this.animationFlippedHorizontal && !this.alreadyFlippedHorizontal) {
+	          ctx.translate(layer.width, 0);
+	          ctx.scale(-1, 1);
+	          this.alreadyFlippedHorizontal = true;
+	        } else if (!this.animationFlippedHorizontal && this.alreadyFlippedHorizontal) {
+	          ctx.translate(layer.width, 0);
+	          ctx.scale(-1, 1);
+	          this.alreadyFlippedHorizontal = false;
+	        }
+
+	        var X = (layer.width - anim.w) * 0.5;
+	        var Y = (layer.height - anim.h) * 0.5;
+	        ctx.save();
+
+	        ctx.drawImage(props.get(this).spriteSheet, anim.x, anim.y, anim.w, anim.h, X, Y, anim.w, anim.h);
+
+	        ctx.restore();
+	      }
+	    }
+	  }]);
+
+	  return GameObject;
+	}();
+
+	exports.default = GameObject;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(3);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var states = [];
+
+	/*
+	*/
+	function currentState() {
+	  return states[states.length - 1];
+	}
+
+	/*
+	*/
+	function previousState() {
+	  if (states.length <= 2) return states[1];else return states[states.length - 2];
+	}
+
+	/*
+	*/
+	function setInitialState(obj) {
+	  if (!_lodash2.default.isPlainObject(obj)) throw new Error('Must pass plain object to setInitialState.');
+
+	  states[0] = obj;
+	}
+
+	/*
+	*/
+	function modifyState(func) {
+	  var tempState = currentState();
+	  func(tempState);
+	  setNewState(tempState);
+	  return currentState();
+	}
+
+	/*
+	*/
+	function setNewState(obj) {
+	  states.push(obj);
+	}
+
+	/*
+	*/
+	function resetState() {
+	  states.splice(1);
+	}
+
+	/*
+	*/
+	function stateHistory() {
+	  return states;
+	}
+
+	/*
+	*/
+	function purgeStateHistory() {
+	  states.splice(1, states.length - 2);
+	}
+
+	var stateStore = {
+	  modifyState: modifyState,
+	  resetState: resetState,
+	  purgeStateHistory: purgeStateHistory,
+	  setInitialState: setInitialState
+	};
+
+	Object.defineProperty(stateStore, 'state', {
+	  get: function get() {
+	    return currentState();
+	  }
+	});
+
+	Object.defineProperty(stateStore, 'previousState', {
+	  get: function get() {
+	    return previousState();
+	  }
+	});
+
+	exports.default = stateStore;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Layer = function Layer(layerName, zIndex) {
+	  _classCallCheck(this, Layer);
+
+	  this.name = layerName;
+	  this.zIndex = zIndex;
+	  this.canvas = document.createElement("canvas");
+	  this.ctx = this.canvas.getContext('2d');
+	  this.canvas.style.position = "absolute";
+	  this.canvas.style.zIndex = zIndex;
+	};
+
+	exports.default = Layer;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var GameContainer = function GameContainer(element) {
+	  _classCallCheck(this, GameContainer);
+
+	  this.element = element;
+	  this.width = element.offsetWidth;
+	  this.height = element.offsetHeight;
+	};
+
+	exports.default = GameContainer;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _keyMap;
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var keyMap = (_keyMap = {
+		32: 'space',
+		37: 'left',
+		38: 'up',
+		39: 'right',
+		40: 'down',
+		48: 'n0',
+		49: 'n1',
+		50: 'n2',
+		51: 'n3',
+		52: 'n4',
+		53: 'n5',
+		54: 'n6',
+		55: 'n7',
+		56: 'n8',
+		57: 'n9',
+		65: 'A',
+		66: 'B',
+		67: 'C',
+		68: 'D',
+		69: 'E',
+		70: 'F',
+		71: 'G',
+		72: 'H',
+		73: 'I',
+		74: 'J',
+		75: 'K',
+		76: 'L',
+		77: 'M',
+		78: 'N',
+		79: 'O',
+		80: 'P',
+		81: 'Q',
+		82: 'R',
+		83: 'S',
+		84: 'T',
+		85: 'U',
+		86: 'P',
+		87: 'W',
+		88: 'X',
+		89: 'Y',
+		90: 'Z',
+		8: 'backspace',
+		9: 'tab',
+		13: 'enter',
+		16: 'shift',
+		17: 'ctrl',
+		18: 'alt',
+		20: 'caps',
+		91: 'lWindow'
+	}, _defineProperty(_keyMap, '91', 'lCmd'), _defineProperty(_keyMap, 93, 'rCmd'), _defineProperty(_keyMap, '93', 'select'), _defineProperty(_keyMap, 186, 'semiCol'), _defineProperty(_keyMap, 187, 'equals'), _defineProperty(_keyMap, 188, 'comma'), _defineProperty(_keyMap, 189, 'dash'), _defineProperty(_keyMap, 190, 'period'), _defineProperty(_keyMap, 191, 'slash'), _defineProperty(_keyMap, 192, 'grave'), _defineProperty(_keyMap, 219, 'lBrack'), _defineProperty(_keyMap, 220, 'bSlash'), _defineProperty(_keyMap, 221, 'rBrack'), _defineProperty(_keyMap, 222, 'sQuote'), _keyMap);
+
+	exports.default = keyMap;
 
 /***/ }
 /******/ ]);
