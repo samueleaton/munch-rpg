@@ -93,8 +93,12 @@
 	//   player.setAnimation('sprint');
 	// }, 4000);
 
-	_index2.default.loop(function (state) {
-	  if (state.keys.right && state.keys.shift) player.setAnimation('sprint');else if (state.keys.left && state.keys.shift) player.setAnimation('sprint', { flipX: true });else if (state.keys.left) player.setAnimation('walk', { flipX: true });else if (state.keys.right) player.setAnimation('walk');else if (state.flippedX) player.setAnimation('idle', { flipX: true });else player.setAnimation('idle');
+	_index2.default.loop(function (state, previousState) {
+	  if (state.keys.left && state.keys.right && state.keys.shift) {
+	    if (!previousState.keys.left && state.keys.left) player.setAnimation('sprint', { flipX: true });else if (!previousState.keys.right && state.keys.right) player.setAnimation('sprint');
+	  } else if (state.keys.right && state.keys.shift) player.setAnimation('sprint');else if (state.keys.left && state.keys.shift) player.setAnimation('sprint', { flipX: true });else if (state.keys.left && state.keys.right) {
+	    if (!previousState.keys.left && state.keys.left) player.setAnimation('walk', { flipX: true });else if (!previousState.keys.right && state.keys.right) player.setAnimation('walk');
+	  } else if (state.keys.left) player.setAnimation('walk', { flipX: true });else if (state.keys.right) player.setAnimation('walk');else if (state.flippedX) player.setAnimation('idle', { flipX: true });else player.setAnimation('idle');
 	});
 	// player.defineAnimation('run', [
 	//   {x: 0, y: 0, w: 10, h: 10, flipX: false },
@@ -15533,7 +15537,7 @@
 	/*
 	*/
 	function modifyState(func) {
-	  var tempState = currentState();
+	  var tempState = _lodash2.default.cloneDeep(currentState());
 	  func(tempState);
 	  setNewState(tempState);
 	  return currentState();

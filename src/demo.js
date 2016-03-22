@@ -63,15 +63,27 @@ setTimeout(() => {
 //   player.setAnimation('sprint');
 // }, 4000);
 
-munch.loop(state => {
-  if (state.keys.right && state.keys.shift)
+munch.loop((state, previousState) => {
+  if (state.keys.left && state.keys.right && state.keys.shift) {
+    if (!previousState.keys.left && state.keys.left)
+      player.setAnimation('sprint', {flipX: true});
+    else if (!previousState.keys.right && state.keys.right)
+      player.setAnimation('sprint');
+  }
+  else if (state.keys.right && state.keys.shift)
     player.setAnimation('sprint');
   else if (state.keys.left && state.keys.shift)
     player.setAnimation('sprint', {flipX: true});
+  else if (state.keys.left && state.keys.right) {
+    if (!previousState.keys.left && state.keys.left)
+      player.setAnimation('walk', {flipX: true});
+    else if (!previousState.keys.right && state.keys.right)
+      player.setAnimation('walk');
+  }
   else if (state.keys.left)
     player.setAnimation('walk', {flipX: true});
   else if (state.keys.right)
-    player.setAnimation('walk');
+      player.setAnimation('walk');
   else if (state.flippedX)
     player.setAnimation('idle', {flipX: true});
   else

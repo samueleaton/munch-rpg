@@ -29,7 +29,7 @@ function setInitialState(obj) {
 /*
 */
 function modifyState(func) {
-  const tempState = currentState();
+  const tempState = _.cloneDeep(currentState());
   func(tempState);
   setNewState(tempState);
   return currentState();
